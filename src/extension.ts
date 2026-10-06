@@ -118,12 +118,36 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  const resetVideosCommand = vscode.commands.registerCommand(
+    "powerMeme.resetVideos",
+    async () => {
+      const config = vscode.workspace.getConfiguration("powerMeme");
+
+      await config.update(
+        "successVideoPath",
+        "",
+        vscode.ConfigurationTarget.Global,
+      );
+
+      await config.update(
+        "errorVideoPath",
+        "",
+        vscode.ConfigurationTarget.Global,
+      );
+
+      vscode.window.showInformationMessage(
+        "Power Meme: Video paths reset to default.",
+      );
+    },
+  );
+
   context.subscriptions.push(
     terminalListener,
     selectSuccessVideoCommand,
     selectErrorVideoCommand,
+    resetVideosCommand,
   );
-  
+
 }
 
 export function deactivate() { }
