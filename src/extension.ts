@@ -85,10 +85,45 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  const selectErrorVideoCommand = vscode.commands.registerCommand(
+    "powerMeme.selectErrorVideo",
+    async () => {
+      const selection = await vscode.window.showOpenDialog({
+        canSelectFiles: true,
+        canSelectFolders: false,
+        canSelectMany: false,
+        filters: {
+          Videos: ["mp4", "webm", "mov", "mkv"],
+        },
+        openLabel: "Select Error Video",
+      });
+
+      if (!selection || selection.length === 0) {
+        return;
+      }
+
+      const selectedPath = selection[0].fsPath;
+
+      const config = vscode.workspace.getConfiguration("powerMeme");
+
+      await config.update(
+        "errorVideoPath",
+        selectedPath,
+        vscode.ConfigurationTarget.Global,
+      );
+
+      vscode.window.showInformationMessage(
+        "Power Meme: Error video updated.",
+      );
+    },
+  );
+
   context.subscriptions.push(
     terminalListener,
     selectSuccessVideoCommand,
+    selectErrorVideoCommand,
   );
+  
 }
 
 export function deactivate() { }

@@ -19,6 +19,10 @@
       {
         "command": "powerMeme.selectSuccessVideo",
         "title": "Power Meme: Select Success Video"
+      },
+      {
+        "command": "powerMeme.selectErrorVideo",
+        "title": "Power Meme: Select Error Video"
       }
     ],
     "configuration": {
