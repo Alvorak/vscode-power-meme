@@ -15,6 +15,12 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "powerMeme.selectSuccessVideo",
+        "title": "Power Meme: Select Success Video"
+      }
+    ],
     "configuration": {
       "title": "Power Meme",
       "properties": {

@@ -52,7 +52,43 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
-  context.subscriptions.push(terminalListener);
+  const selectSuccessVideoCommand = vscode.commands.registerCommand(
+    "powerMeme.selectSuccessVideo",
+    async () => {
+      const selection = await vscode.window.showOpenDialog({
+        canSelectFiles: true,
+        canSelectFolders: false,
+        canSelectMany: false,
+        filters: {
+          Videos: ["mp4", "webm", "mov", "mkv"],
+        },
+        openLabel: "Select Success Video",
+      });
+
+      if (!selection || selection.length === 0) {
+        return;
+      }
+
+      const selectedPath = selection[0].fsPath;
+
+      const config = vscode.workspace.getConfiguration("powerMeme");
+
+      await config.update(
+        "successVideoPath",
+        selectedPath,
+        vscode.ConfigurationTarget.Global,
+      );
+
+      vscode.window.showInformationMessage(
+        "Power Meme: Success video updated.",
+      );
+    },
+  );
+
+  context.subscriptions.push(
+    terminalListener,
+    selectSuccessVideoCommand,
+  );
 }
 
-export function deactivate() {}
+export function deactivate() { }
