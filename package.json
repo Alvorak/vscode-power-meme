@@ -1,0 +1,66 @@
+{
+  "name": "vscode-power-meme",
+  "displayName": "VSCode Power Meme",
+  "description": "Plays a short meme video when code execution finishes successfully.",
+  "version": "0.0.1",
+  "publisher": "alvorak",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Power Meme",
+      "properties": {
+        "powerMeme.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable Power Meme."
+        },
+        "powerMeme.volume": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Volume used when playing the meme video."
+        },
+        "powerMeme.playOnSuccess": {
+          "type": "boolean",
+          "default": true,
+          "description": "Play the meme when code execution finishes successfully."
+        },
+        "powerMeme.playOnError": {
+          "type": "boolean",
+          "default": false,
+          "description": "Play the meme when code execution finishes with an error."
+        },
+        "powerMeme.successVideoPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the video played when code execution succeeds."
+        },
+        "powerMeme.errorVideoPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the video played when code execution fails."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.95.0",
+    "electron": "^33.4.11",
+    "typescript": "^5.0.0"
+  }
+}
