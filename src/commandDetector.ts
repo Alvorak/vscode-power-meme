@@ -1,39 +1,47 @@
 const executionPatterns: RegExp[] = [
-    /^node\b/i,
-    /^npm run\b/i,
-    /^npm start\b/i,
-    /^npm test\b/i,
-    /^npx\b/i,
-    /^pnpm\b/i,
-    /^yarn\b/i,
-    /^bun\b/i,
+  // JavaScript / TypeScript
+  /^node\b/i,
+  /^npm\s+(run|start|test)\b/i,
+  /^npx\b/i,
+  /^pnpm\b/i,
+  /^yarn\b/i,
+  /^bun\b/i,
+  /^deno\s+run\b/i,
 
-    /^python\b/i,
-    /^python3\b/i,
-    /^py\b/i,
+  // Python
+  /^python\b/i,
+  /^python3\b/i,
+  /^py\b/i,
 
-    /^java\b/i,
-    /^javac\b/i,
+  // Java
+  /^java\b/i,
 
-    /^dotnet run\b/i,
+  // .NET
+  /^dotnet\s+run\b/i,
+  /^dotnet\s+test\b/i,
 
-    /^cargo run\b/i,
+  // Rust
+  /^cargo\s+run\b/i,
+  /^cargo\s+test\b/i,
 
-    /^go run\b/i,
+  // Go
+  /^go\s+run\b/i,
+  /^go\s+test\b/i,
 
-    /^php\b/i,
-
-    /^ruby\b/i,
-
-    /^perl\b/i,
-
-    /^deno run\b/i
+  // PHP / Ruby / Perl
+  /^php\b/i,
+  /^ruby\b/i,
+  /^perl\b/i,
 ];
 
 export function isCodeExecution(command: string): boolean {
-    const trimmedCommand = command.trim();
+  const normalizedCommand = command.trim();
 
-    return executionPatterns.some((pattern) =>
-        pattern.test(trimmedCommand)
-    );
+  if (!normalizedCommand) {
+    return false;
+  }
+
+  return executionPatterns.some((pattern) =>
+    pattern.test(normalizedCommand),
+  );
 }
