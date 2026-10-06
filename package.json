@@ -1,7 +1,7 @@
 {
   "name": "vscode-power-meme",
   "displayName": "VSCode Power Meme",
-  "description": "Plays a short meme video when code execution finishes successfully.",
+  "description": "Shows a short meme GIF when code execution finishes.",
   "version": "0.0.1",
   "publisher": "alvorak",
   "engines": {
@@ -17,16 +17,20 @@
   "contributes": {
     "commands": [
       {
-        "command": "powerMeme.selectSuccessVideo",
-        "title": "Power Meme: Select Success Video"
+        "command": "powerMeme.selectSuccessGif",
+        "title": "Power Meme: Select Success GIF"
       },
       {
-        "command": "powerMeme.selectErrorVideo",
-        "title": "Power Meme: Select Error Video"
+        "command": "powerMeme.selectErrorGif",
+        "title": "Power Meme: Select Error GIF"
       },
       {
-        "command": "powerMeme.resetVideos",
-        "title": "Power Meme: Reset Videos"
+        "command": "powerMeme.resetMemes",
+        "title": "Power Meme: Reset Memes"
+      },
+      {
+        "command": "powerMeme.testEditorMeme",
+        "title": "Power Meme: Test Editor Meme"
       }
     ],
     "configuration": {
@@ -37,32 +41,25 @@
           "default": true,
           "description": "Enable or disable Power Meme."
         },
-        "powerMeme.volume": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Volume used when playing the meme video."
-        },
         "powerMeme.playOnSuccess": {
           "type": "boolean",
           "default": true,
-          "description": "Play the meme when code execution finishes successfully."
+          "description": "Show the meme when code execution finishes successfully."
         },
         "powerMeme.playOnError": {
           "type": "boolean",
           "default": false,
-          "description": "Play the meme when code execution finishes with an error."
+          "description": "Show the meme when code execution finishes with an error."
         },
-        "powerMeme.successVideoPath": {
+        "powerMeme.successGifPath": {
           "type": "string",
           "default": "",
-          "description": "Path to the video played when code execution succeeds."
+          "description": "Path to the GIF shown when code execution succeeds. If a WAV file with the same name exists, it will be played automatically."
         },
-        "powerMeme.errorVideoPath": {
+        "powerMeme.errorGifPath": {
           "type": "string",
           "default": "",
-          "description": "Path to the video played when code execution fails."
+          "description": "Path to the GIF shown when code execution fails. If a WAV file with the same name exists, it will be played automatically."
         }
       }
     }
@@ -74,7 +71,6 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.95.0",
-    "electron": "^33.4.11",
     "typescript": "^5.0.0"
   }
 }

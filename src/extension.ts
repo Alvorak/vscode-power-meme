@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import { isCodeExecution } from "./commandDetector";
-import { playMeme } from "./memePlayer";
+import { showEditorMeme } from "./editorMemePlayer";
 
 export function activate(context: vscode.ExtensionContext) {
   const terminalListener = vscode.window.onDidEndTerminalShellExecution(
-    (event) => {
+    async (event) => {
       const config = vscode.workspace.getConfiguration("powerMeme");
       const enabled = config.get<boolean>("enabled", true);
 
@@ -19,135 +19,174 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      const volume = config.get<number>("volume", 0.7);
-
       if (exitCode === 0) {
-        const playOnSuccess = config.get<boolean>("playOnSuccess", true);
+        const playOnSuccess = config.get<boolean>(
+          "playOnSuccess",
+          true,
+        );
 
         if (!playOnSuccess) {
           return;
         }
 
-        const successVideoPath = config.get<string>(
-          "successVideoPath",
-          ""
+        const successGifPath = config.get<string>(
+          "successGifPath",
+          "",
         );
 
-        playMeme(volume, successVideoPath);
+        await showEditorMeme(
+          context,
+          "ok",
+          successGifPath,
+        );
+
         return;
       }
 
-      const playOnError = config.get<boolean>("playOnError", false);
+      const playOnError = config.get<boolean>(
+        "playOnError",
+        false,
+      );
 
       if (!playOnError) {
         return;
       }
 
-      const errorVideoPath = config.get<string>(
-        "errorVideoPath",
-        ""
-      );
-
-      playMeme(volume, errorVideoPath);
-    },
-  );
-
-  const selectSuccessVideoCommand = vscode.commands.registerCommand(
-    "powerMeme.selectSuccessVideo",
-    async () => {
-      const selection = await vscode.window.showOpenDialog({
-        canSelectFiles: true,
-        canSelectFolders: false,
-        canSelectMany: false,
-        filters: {
-          Videos: ["mp4", "webm", "mov", "mkv"],
-        },
-        openLabel: "Select Success Video",
-      });
-
-      if (!selection || selection.length === 0) {
-        return;
-      }
-
-      const selectedPath = selection[0].fsPath;
-
-      const config = vscode.workspace.getConfiguration("powerMeme");
-
-      await config.update(
-        "successVideoPath",
-        selectedPath,
-        vscode.ConfigurationTarget.Global,
-      );
-
-      vscode.window.showInformationMessage(
-        "Power Meme: Success video updated.",
-      );
-    },
-  );
-
-  const selectErrorVideoCommand = vscode.commands.registerCommand(
-    "powerMeme.selectErrorVideo",
-    async () => {
-      const selection = await vscode.window.showOpenDialog({
-        canSelectFiles: true,
-        canSelectFolders: false,
-        canSelectMany: false,
-        filters: {
-          Videos: ["mp4", "webm", "mov", "mkv"],
-        },
-        openLabel: "Select Error Video",
-      });
-
-      if (!selection || selection.length === 0) {
-        return;
-      }
-
-      const selectedPath = selection[0].fsPath;
-
-      const config = vscode.workspace.getConfiguration("powerMeme");
-
-      await config.update(
-        "errorVideoPath",
-        selectedPath,
-        vscode.ConfigurationTarget.Global,
-      );
-
-      vscode.window.showInformationMessage(
-        "Power Meme: Error video updated.",
-      );
-    },
-  );
-
-  const resetVideosCommand = vscode.commands.registerCommand(
-    "powerMeme.resetVideos",
-    async () => {
-      const config = vscode.workspace.getConfiguration("powerMeme");
-
-      await config.update(
-        "successVideoPath",
+      const errorGifPath = config.get<string>(
+        "errorGifPath",
         "",
-        vscode.ConfigurationTarget.Global,
       );
 
-      await config.update(
-        "errorVideoPath",
-        "",
-        vscode.ConfigurationTarget.Global,
-      );
-
-      vscode.window.showInformationMessage(
-        "Power Meme: Video paths reset to default.",
+      await showEditorMeme(
+        context,
+        "error",
+        errorGifPath,
       );
     },
   );
+
+  const selectSuccessGifCommand =
+    vscode.commands.registerCommand(
+      "powerMeme.selectSuccessGif",
+      async () => {
+        const selection = await vscode.window.showOpenDialog({
+          canSelectFiles: true,
+          canSelectFolders: false,
+          canSelectMany: false,
+          filters: {
+            GIF: ["gif"],
+          },
+          openLabel: "Select Success GIF",
+        });
+
+        if (!selection || selection.length === 0) {
+          return;
+        }
+
+        const selectedPath = selection[0].fsPath;
+
+        const config =
+          vscode.workspace.getConfiguration("powerMeme");
+
+        await config.update(
+          "successGifPath",
+          selectedPath,
+          vscode.ConfigurationTarget.Global,
+        );
+
+        vscode.window.showInformationMessage(
+          "Power Meme: Success GIF updated.",
+        );
+      },
+    );
+
+  const selectErrorGifCommand =
+    vscode.commands.registerCommand(
+      "powerMeme.selectErrorGif",
+      async () => {
+        const selection = await vscode.window.showOpenDialog({
+          canSelectFiles: true,
+          canSelectFolders: false,
+          canSelectMany: false,
+          filters: {
+            GIF: ["gif"],
+          },
+          openLabel: "Select Error GIF",
+        });
+
+        if (!selection || selection.length === 0) {
+          return;
+        }
+
+        const selectedPath = selection[0].fsPath;
+
+        const config =
+          vscode.workspace.getConfiguration("powerMeme");
+
+        await config.update(
+          "errorGifPath",
+          selectedPath,
+          vscode.ConfigurationTarget.Global,
+        );
+
+        vscode.window.showInformationMessage(
+          "Power Meme: Error GIF updated.",
+        );
+      },
+    );
+
+  const resetMemesCommand =
+    vscode.commands.registerCommand(
+      "powerMeme.resetMemes",
+      async () => {
+        const config =
+          vscode.workspace.getConfiguration("powerMeme");
+
+        await config.update(
+          "successGifPath",
+          "",
+          vscode.ConfigurationTarget.Global,
+        );
+
+        await config.update(
+          "errorGifPath",
+          "",
+          vscode.ConfigurationTarget.Global,
+        );
+
+        vscode.window.showInformationMessage(
+          "Power Meme: Meme paths reset to default.",
+        );
+      },
+    );
+
+  const testEditorMemeCommand =
+    vscode.commands.registerCommand(
+      "powerMeme.testEditorMeme",
+      async () => {
+        const config =
+          vscode.workspace.getConfiguration("powerMeme");
+
+        const successGifPath = config.get<string>(
+          "successGifPath",
+          "",
+        );
+
+        await showEditorMeme(
+          context,
+          "ok",
+          successGifPath,
+        );
+      },
+    );
 
   context.subscriptions.push(
     terminalListener,
-    selectSuccessVideoCommand,
-    selectErrorVideoCommand,
-    resetVideosCommand,
+    selectSuccessGifCommand,
+    selectErrorGifCommand,
+    resetMemesCommand,
+    testEditorMemeCommand,
   );
-
 }
 
 export function deactivate() { }
