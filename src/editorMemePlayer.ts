@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { spawn } from "child_process";
+import { playAudio } from "./audioPlayer";
 
 export type MemeType = "ok" | "error";
 
@@ -93,28 +93,26 @@ export async function showEditorMeme(
     return;
   }
 
-  const escapedAudioPath = audioPath.replace(/'/g, "''");
+  const audioProcess = playAudio(audioPath);
 
-  const audioProcess = spawn(
-    "powershell.exe",
-    [
-      "-NoProfile",
-      "-NonInteractive",
-      "-Command",
-      `$player = New-Object System.Media.SoundPlayer '${escapedAudioPath}'; $player.PlaySync();`,
-    ],
-    {
-      windowsHide: true,
-      stdio: "ignore",
-    },
-  );
+  if (!audioProcess) {
+    setTimeout(() => {
+      decorationType.dispose();
+    }, 3000);
 
-  audioProcess.on("error", (error) => {
+    return;
+  }
+
+  audioProcess.on("exit", (code) => {
+    if (code === 127) {
+      setTimeout(() => {
+        decorationType.dispose();
+      }, 3000);
+
+      return;
+    }
+
     decorationType.dispose();
-
-    vscode.window.showErrorMessage(
-      `Power Meme audio error: ${error.message}`,
-    );
   });
 
   audioProcess.on("exit", () => {
