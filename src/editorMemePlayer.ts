@@ -5,11 +5,17 @@ import { playAudio } from "./audioPlayer";
 
 export type MemeType = "ok" | "error";
 
+let isPlaying = false;
+
 export async function showEditorMeme(
   context: vscode.ExtensionContext,
   type: MemeType,
   customGifPath?: string,
 ): Promise<void> {
+  if (isPlaying) {
+    return;
+  }
+
   const editor =
     vscode.window.activeTextEditor ??
     vscode.window.visibleTextEditors[0];
@@ -30,7 +36,8 @@ export async function showEditorMeme(
     "meme.gif",
   );
 
-  const normalizedCustomGifPath = customGifPath?.trim();
+  const normalizedCustomGifPath =
+    customGifPath?.trim();
 
   const gifPath =
     normalizedCustomGifPath &&
@@ -46,7 +53,8 @@ export async function showEditorMeme(
     return;
   }
 
-  const gifExtension = path.extname(gifPath).toLowerCase();
+  const gifExtension =
+    path.extname(gifPath).toLowerCase();
 
   if (gifExtension !== ".gif") {
     vscode.window.showErrorMessage(
@@ -80,6 +88,8 @@ export async function showEditorMeme(
     cursorPosition,
   );
 
+  isPlaying = true;
+
   editor.setDecorations(
     decorationType,
     [cursorRange],
@@ -88,6 +98,7 @@ export async function showEditorMeme(
   if (!fs.existsSync(audioPath)) {
     setTimeout(() => {
       decorationType.dispose();
+      isPlaying = false;
     }, 3000);
 
     return;
@@ -98,24 +109,32 @@ export async function showEditorMeme(
   if (!audioProcess) {
     setTimeout(() => {
       decorationType.dispose();
+      isPlaying = false;
     }, 3000);
 
     return;
   }
 
+  audioProcess.on("error", (error) => {
+    decorationType.dispose();
+    isPlaying = false;
+
+    vscode.window.showErrorMessage(
+      `Power Meme audio error: ${error.message}`,
+    );
+  });
+
   audioProcess.on("exit", (code) => {
     if (code === 127) {
       setTimeout(() => {
         decorationType.dispose();
+        isPlaying = false;
       }, 3000);
 
       return;
     }
 
     decorationType.dispose();
-  });
-
-  audioProcess.on("exit", () => {
-    decorationType.dispose();
+    isPlaying = false;
   });
 }

@@ -1,6 +1,7 @@
 const executionPatterns: RegExp[] = [
   // JavaScript / TypeScript
   /^node\b/i,
+  /^tsx\b/i,
   /^npm\s+(run|start|test)\b/i,
   /^npx\b/i,
   /^pnpm\b/i,
@@ -34,6 +35,14 @@ const executionPatterns: RegExp[] = [
   /^perl\b/i,
 ];
 
+const persistentExecutionPatterns: RegExp[] = [
+  /^npm\s+run\s+dev\b/i,
+  /^npm\s+run\s+start\b/i,
+  /^tsx\s+watch\b/i,
+  /^vite\b/i,
+  /^nodemon\b/i,
+];
+
 export function isCodeExecution(command: string): boolean {
   const normalizedCommand = command.trim();
 
@@ -42,6 +51,20 @@ export function isCodeExecution(command: string): boolean {
   }
 
   return executionPatterns.some((pattern) =>
+    pattern.test(normalizedCommand),
+  );
+}
+
+export function isPersistentCodeExecution(
+  command: string,
+): boolean {
+  const normalizedCommand = command.trim();
+
+  if (!normalizedCommand) {
+    return false;
+  }
+
+  return persistentExecutionPatterns.some((pattern) =>
     pattern.test(normalizedCommand),
   );
 }
