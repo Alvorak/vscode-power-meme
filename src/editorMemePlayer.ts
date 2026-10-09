@@ -30,9 +30,12 @@ export async function showEditorMeme(
     "meme.gif",
   );
 
+  const normalizedCustomGifPath = customGifPath?.trim();
+
   const gifPath =
-    customGifPath && customGifPath.trim().length > 0
-      ? customGifPath
+    normalizedCustomGifPath &&
+      fs.existsSync(normalizedCustomGifPath)
+      ? normalizedCustomGifPath
       : defaultGifPath;
 
   if (!fs.existsSync(gifPath)) {
