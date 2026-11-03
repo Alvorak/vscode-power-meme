@@ -1,15 +1,21 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { spawn } from "child_process";
+import { playAudio } from "./audioPlayer";
 
 export type MemeType = "ok" | "error";
+
+let isPlaying = false;
 
 export async function showEditorMeme(
   context: vscode.ExtensionContext,
   type: MemeType,
   customGifPath?: string,
 ): Promise<void> {
+  if (isPlaying) {
+    return;
+  }
+
   const editor =
     vscode.window.activeTextEditor ??
     vscode.window.visibleTextEditors[0];
@@ -30,7 +36,8 @@ export async function showEditorMeme(
     "meme.gif",
   );
 
-  const normalizedCustomGifPath = customGifPath?.trim();
+  const normalizedCustomGifPath =
+    customGifPath?.trim();
 
   const gifPath =
     normalizedCustomGifPath &&
@@ -46,7 +53,8 @@ export async function showEditorMeme(
     return;
   }
 
-  const gifExtension = path.extname(gifPath).toLowerCase();
+  const gifExtension =
+    path.extname(gifPath).toLowerCase();
 
   if (gifExtension !== ".gif") {
     vscode.window.showErrorMessage(
@@ -80,6 +88,8 @@ export async function showEditorMeme(
     cursorPosition,
   );
 
+  isPlaying = true;
+
   editor.setDecorations(
     decorationType,
     [cursorRange],
@@ -88,36 +98,43 @@ export async function showEditorMeme(
   if (!fs.existsSync(audioPath)) {
     setTimeout(() => {
       decorationType.dispose();
+      isPlaying = false;
     }, 3000);
 
     return;
   }
 
-  const escapedAudioPath = audioPath.replace(/'/g, "''");
+  const audioProcess = playAudio(audioPath);
 
-  const audioProcess = spawn(
-    "powershell.exe",
-    [
-      "-NoProfile",
-      "-NonInteractive",
-      "-Command",
-      `$player = New-Object System.Media.SoundPlayer '${escapedAudioPath}'; $player.PlaySync();`,
-    ],
-    {
-      windowsHide: true,
-      stdio: "ignore",
-    },
-  );
+  if (!audioProcess) {
+    setTimeout(() => {
+      decorationType.dispose();
+      isPlaying = false;
+    }, 3000);
+
+    return;
+  }
 
   audioProcess.on("error", (error) => {
     decorationType.dispose();
+    isPlaying = false;
 
     vscode.window.showErrorMessage(
       `Power Meme audio error: ${error.message}`,
     );
   });
 
-  audioProcess.on("exit", () => {
+  audioProcess.on("exit", (code) => {
+    if (code === 127) {
+      setTimeout(() => {
+        decorationType.dispose();
+        isPlaying = false;
+      }, 3000);
+
+      return;
+    }
+
     decorationType.dispose();
+    isPlaying = false;
   });
 }
