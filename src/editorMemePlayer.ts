@@ -95,16 +95,11 @@ export async function showEditorMeme(
     [cursorRange],
   );
 
-  if (!fs.existsSync(audioPath)) {
-    setTimeout(() => {
-      decorationType.dispose();
-      isPlaying = false;
-    }, 3000);
-
-    return;
-  }
-
-  const audioProcess = playAudio(audioPath);
+  const muted = vscode.workspace
+    .getConfiguration("powerMeme")
+    .get<boolean>("muted", false);
+  const audioProcess =
+    !muted && fs.existsSync(audioPath) ? playAudio(audioPath) : undefined;
 
   if (!audioProcess) {
     setTimeout(() => {

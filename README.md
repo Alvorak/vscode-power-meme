@@ -18,6 +18,8 @@ You can also run **Power Meme: Test Editor Meme** from the Command Palette to pr
 
 Open the Command Palette and run **Power Meme: Select Success GIF** or **Power Meme: Select Error GIF** to choose a local `.gif` file. To add sound, place a `.wav` file with the same name in the same folder, for example `celebrate.gif` and `celebrate.wav`.
 
+Run **Power Meme: Toggle Mute** to turn audio off or back on. The setting applies to the next meme and leaves GIFs enabled.
+
 Run **Power Meme: Reset Memes** to clear both custom paths and restore the bundled GIF. Power Meme plays one meme at a time. Audio playback uses PowerShell on Windows, `afplay` on macOS, and `paplay` or `aplay` on Linux.
 
 ### Settings
@@ -25,6 +27,7 @@ Run **Power Meme: Reset Memes** to clear both custom paths and restore the bundl
 | Setting | Default | Description |
 | --- | --- | --- |
 | `powerMeme.enabled` | `true` | Enable automatic reactions to terminal commands. |
+| `powerMeme.muted` | `false` | Mute meme audio while still showing GIFs. |
 | `powerMeme.playOnSuccess` | `true` | Show a GIF when a supported command succeeds. |
 | `powerMeme.playOnError` | `false` | Show a GIF when a supported command fails. |
 | `powerMeme.successGifPath` | Empty | Path to a custom success GIF. |

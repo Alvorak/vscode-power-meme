@@ -302,6 +302,26 @@ export function activate(context: vscode.ExtensionContext) {
       },
     );
 
+  const toggleMuteCommand =
+    vscode.commands.registerCommand(
+      "powerMeme.toggleMute",
+      async () => {
+        const config =
+          vscode.workspace.getConfiguration("powerMeme");
+        const muted = !config.get<boolean>("muted", false);
+
+        await config.update(
+          "muted",
+          muted,
+          vscode.ConfigurationTarget.Global,
+        );
+
+        vscode.window.showInformationMessage(
+          muted ? "Power Meme: Audio muted." : "Power Meme: Audio unmuted.",
+        );
+      },
+    );
+
   const testEditorMemeCommand =
     vscode.commands.registerCommand(
       "powerMeme.testEditorMeme",
@@ -328,6 +348,7 @@ export function activate(context: vscode.ExtensionContext) {
     selectSuccessGifCommand,
     selectErrorGifCommand,
     resetMemesCommand,
+    toggleMuteCommand,
     testEditorMemeCommand,
   );
 }

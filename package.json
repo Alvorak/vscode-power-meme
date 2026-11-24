@@ -6,11 +6,14 @@
   "name": "vscode-power-meme",
   "displayName": "VSCode Power Meme",
   "description": "Shows a short meme GIF when code execution finishes.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "alvorak",
   "engines": {
     "vscode": "^1.95.0"
   },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "categories": [
     "Other"
   ],
@@ -30,6 +33,10 @@
         "title": "Power Meme: Reset Memes"
       },
       {
+        "command": "powerMeme.toggleMute",
+        "title": "Power Meme: Toggle Mute"
+      },
+      {
         "command": "powerMeme.testEditorMeme",
         "title": "Power Meme: Test Editor Meme"
       }
@@ -41,6 +48,12 @@
           "type": "boolean",
           "default": true,
           "description": "Enable or disable Power Meme."
+        },
+        "powerMeme.muted": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "description": "Mute meme audio while still showing GIFs."
         },
         "powerMeme.playOnSuccess": {
           "type": "boolean",
@@ -55,12 +68,12 @@
         "powerMeme.successGifPath": {
           "type": "string",
           "default": "",
-          "description": "Path to the GIF shown when code execution succeeds. If a WAV file with the same name exists, it will be played automatically."
+          "description": "Path to the GIF shown when code execution succeeds. A WAV file with the same name plays when audio is enabled."
         },
         "powerMeme.errorGifPath": {
           "type": "string",
           "default": "",
-          "description": "Path to the GIF shown when code execution fails. If a WAV file with the same name exists, it will be played automatically."
+          "description": "Path to the GIF shown when code execution fails. A WAV file with the same name plays when audio is enabled."
         }
       }
     }
