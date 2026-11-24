@@ -1,120 +1,69 @@
 # Power Meme
 
-Power Meme is a Visual Studio Code extension that plays a short video overlay when a code execution finishes.
+Power Meme shows a short meme GIF in Visual Studio Code when a supported command succeeds or fails in the integrated terminal. You can choose separate GIFs for success and failure and pair them with optional WAV audio.
 
-The extension listens to terminal executions and can react differently depending on whether the command succeeds or fails.
+## Installation
 
-## Features
+Open **Extensions** in VS Code, search for `@id:alvorak.vscode-power-meme`, and select **Install**. Power Meme requires VS Code 1.95.0 or later and [terminal shell integration](https://code.visualstudio.com/docs/terminal/shell-integration) for automatic command detection.
 
-- Detects code executions from the VS Code terminal.
-- Plays a video when execution finishes successfully.
-- Optionally plays a video when execution fails.
-- Custom volume.
-- Custom video path for success.
-- Custom video path for errors.
-- Prevents multiple meme overlays from playing at the same time.
-- Supports several common runtimes and package managers.
+## Quick start
+
+1. Open a text file in the editor and start a new integrated terminal.
+2. If you have Node.js installed, run `node -e "console.log('hello')"` to see the success GIF.
+3. To try the error GIF, enable `powerMeme.playOnError` in Settings and run `node -e "process.exit(1)"`.
+
+You can also run **Power Meme: Test Editor Meme** from the Command Palette to preview the success GIF without running a terminal command.
+
+## Customize your memes
+
+Open the Command Palette and run **Power Meme: Select Success GIF** or **Power Meme: Select Error GIF** to choose a local `.gif` file. To add sound, place a `.wav` file with the same name in the same folder, for example `celebrate.gif` and `celebrate.wav`.
+
+Run **Power Meme: Reset Memes** to clear both custom paths and restore the bundled GIF. Power Meme plays one meme at a time. Audio playback uses PowerShell on Windows, `afplay` on macOS, and `paplay` or `aplay` on Linux.
+
+### Settings
+
+| Setting | Default | Description |
+| --- | --- | --- |
+| `powerMeme.enabled` | `true` | Enable automatic reactions to terminal commands. |
+| `powerMeme.playOnSuccess` | `true` | Show a GIF when a supported command succeeds. |
+| `powerMeme.playOnError` | `false` | Show a GIF when a supported command fails. |
+| `powerMeme.successGifPath` | Empty | Path to a custom success GIF. |
+| `powerMeme.errorGifPath` | Empty | Path to a custom error GIF. |
 
 ## Supported commands
 
-Current detection includes commands such as:
+| Tool or runtime | Detected command prefixes |
+| --- | --- |
+| JavaScript and TypeScript | `node`, `tsx`, `npm run`, `npm start`, `npm test`, `npx`, `pnpm`, `yarn`, `bun`, `deno run` |
+| Python | `python`, `python3`, `py` |
+| Java | `java` |
+| .NET | `dotnet run`, `dotnet test` |
+| Rust | `cargo run`, `cargo test` |
+| Go | `go run`, `go test` |
+| PHP, Ruby, and Perl | `php`, `ruby`, `perl` |
 
-- Node.js
-- npm
-- npx
-- pnpm
-- yarn
-- Bun
-- Deno
-- Python
-- Java
-- .NET
-- Rust
-- Go
-- PHP
-- Ruby
-- Perl
-
-Support is based on terminal command detection and will be improved over time.
-
-## Settings
-
-Power Meme currently provides the following settings:
-
-- `Power Meme: Enabled`
-- `Power Meme: Volume`
-- `Power Meme: Play On Success`
-- `Power Meme: Play On Error`
-- `Power Meme: Success Video Path`
-- `Power Meme: Error Video Path`
-
-If no custom video path is configured, the extension uses the default local video.
+Long-running commands such as `npm run dev`, `npm run start`, `tsx watch`, `vite`, and `nodemon` can trigger a reaction during startup.
 
 ## Development
 
-Install dependencies:
+From the repository root, install dependencies, compile, and open the project in VS Code.
 
 ```bash
-npm install
-```
-
-Compile the extension:
-
-```bash
+npm ci
 npm run compile
-```
-
-Open the project in VS Code:
-
-```bash
 code .
 ```
 
-Press `F5` to launch the Extension Development Host.
+Press **F5** to launch the Extension Development Host and follow the quick start in that window. After compiling, run `npx vsce package` to build a local `.vsix`.
 
-You can test a successful execution with:
+### Project structure
 
-```bash
-node -e "console.log('hello')"
-```
-
-And an execution error with:
-
-```bash
-node -e "process.exit(1)"
-```
-
-## Project structure
-
-```text
-vscode-power-meme/
-├── .vscode/
-├── overlay/
-│   ├── assets/
-│   ├── index.html
-│   └── main.js
-├── src/
-│   ├── commandDetector.ts
-│   ├── extension.ts
-│   └── memePlayer.ts
-├── package.json
-├── package-lock.json
-└── tsconfig.json
-```
-
-## Status
-
-The project is currently under development.
-
-Planned improvements include:
-
-- Video selection from VS Code commands.
-- Better command detection.
-- Improved error handling.
-- More overlay customization.
-- Packaging as a VSIX.
-- Publishing to the Visual Studio Code Marketplace.
+- `src/extension.ts` registers commands and listens for terminal events.
+- `src/commandDetector.ts` matches supported terminal commands.
+- `src/editorMemePlayer.ts` displays GIFs in the editor.
+- `src/audioPlayer.ts` handles WAV playback.
+- `overlay/assets/` contains the bundled media.
 
 ## License
 
-This project will be released under the MIT License.
+[MIT](https://github.com/Alvorak/vscode-power-meme/blob/main/LICENSE.md)
